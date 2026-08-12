@@ -1,11 +1,20 @@
-# Mac setup: VS Code, Git, and Claude Code
+# Mac workspace setup: VS Code, Git, and Claude Code
 
-This guide sets up a beginner-friendly coding workspace on a Mac. You do **not** need a GitHub account.
+This guide creates a beginner-friendly coding workspace on a Mac. You do **not** need a GitHub account.
 
-Almost everything happens in Apple’s **Terminal** app. Two system interactions are expected:
+## What success looks like
 
-1. macOS may show an Apple window to approve the Command Line Developer Tools.
-2. Claude Code opens a browser once so you can sign in to your Claude subscription.
+At the end:
+
+- VS Code is open with one folder as the workspace root.
+- That folder contains copies of **all files you want to work with**.
+- The same folder is a local Git repository.
+- VS Code’s integrated terminal is open at the repository root.
+- Claude Code is signed in and running inside that VS Code terminal.
+
+Almost everything begins in Apple’s **Terminal** app. Three interactions outside Terminal are expected: Apple may show a developer-tools approval window, Finder is used once to collect your files, and Claude opens a browser once for sign-in.
+
+> Run **one code block at a time**. Wait for the command to finish and for the Terminal prompt to return before moving on.
 
 ## Before you begin
 
@@ -13,18 +22,16 @@ You need:
 
 - A Mac with macOS 13 or later
 - An internet connection
-- The password you use to sign in to your Mac
+- The password used to sign in to the Mac
 - A Claude Pro, Max, Team, or Enterprise subscription
 
-> Run **one code block at a time**. Wait for the command to finish and for the Terminal prompt to return before moving to the next block.
-
-## 1. Open Terminal
+## 1. Open Apple Terminal
 
 1. Press **Command + Space**.
 2. Type **Terminal**.
 3. Press **Return**.
 
-Check your macOS version:
+Check the macOS version:
 
 ```bash
 sw_vers -productVersion
@@ -32,9 +39,37 @@ sw_vers -productVersion
 
 The first number should be `13` or higher. If it is lower, update macOS before continuing.
 
-## 2. Install Git and Apple’s command-line tools
+## 2. Create the workspace and collect your files
 
-Paste this into Terminal:
+Create one workspace folder:
+
+```bash
+mkdir -p "$HOME/Documents/claude-demo"
+```
+
+Reveal that folder in Finder:
+
+```bash
+open "$HOME/Documents/claude-demo"
+```
+
+Copy every file and subfolder you want to use during the demo into the Finder window that opens.
+
+- Use **copies**, not your only originals.
+- Preserve the existing folders and filenames.
+- Remove passwords, API keys, private records, and other sensitive information.
+
+Return to Terminal and confirm that the workspace is not empty:
+
+```bash
+find "$HOME/Documents/claude-demo" -type f | head -20
+```
+
+You should see some of your filenames. **Do not continue with an empty workspace.**
+
+## 3. Install Git and Apple’s command-line tools
+
+Run:
 
 ```bash
 xcode-select -p >/dev/null 2>&1 || xcode-select --install
@@ -44,7 +79,7 @@ If an Apple installer window appears:
 
 1. Select **Install**.
 2. Agree to Apple’s license.
-3. Wait for the installation to finish.
+3. Wait until installation finishes.
 4. Return to Terminal.
 
 Confirm that Git is available:
@@ -55,9 +90,9 @@ git --version
 
 Success looks like `git version` followed by a version number.
 
-## 3. Install VS Code from Terminal
+## 4. Install VS Code entirely from Terminal
 
-Create an Applications folder for your user account:
+Create a user Applications folder:
 
 ```bash
 mkdir -p "$HOME/Applications"
@@ -69,13 +104,13 @@ Download Microsoft’s current universal Mac build of VS Code:
 curl -fL "https://update.code.visualstudio.com/latest/darwin-universal/stable" -o "/tmp/VSCode.zip"
 ```
 
-Extract it into your Applications folder:
+Extract VS Code:
 
 ```bash
 ditto -x -k "/tmp/VSCode.zip" "$HOME/Applications"
 ```
 
-Remove the downloaded ZIP after extraction:
+Remove the downloaded ZIP:
 
 ```bash
 rm -f "/tmp/VSCode.zip"
@@ -98,7 +133,7 @@ code --version
 
 Success shows a VS Code version number and build information.
 
-## 4. Install Claude Code
+## 5. Install Claude Code
 
 Run Anthropic’s recommended native installer:
 
@@ -106,7 +141,7 @@ Run Anthropic’s recommended native installer:
 curl -fsSL https://claude.ai/install.sh | bash
 ```
 
-Reload your Terminal environment:
+Reload the Terminal environment:
 
 ```bash
 exec zsh -l
@@ -120,21 +155,15 @@ claude --version
 
 Success shows a Claude Code version number.
 
-## 5. Create your local demo repository
+## 6. Turn the workspace into a repository and open it in VS Code
 
-Create the folder:
-
-```bash
-mkdir -p "$HOME/Documents/claude-demo"
-```
-
-Move into it:
+Move into the workspace:
 
 ```bash
 cd "$HOME/Documents/claude-demo"
 ```
 
-Turn the folder into a local Git repository:
+Initialize the local Git repository:
 
 ```bash
 git init
@@ -142,41 +171,43 @@ git init
 
 Success includes `Initialized empty Git repository`.
 
-Open the folder as the workspace root in VS Code:
+Open this repository as the VS Code workspace root:
 
 ```bash
 code .
 ```
 
-VS Code should open with `claude-demo` shown as the top-level folder.
+VS Code should open with `claude-demo` at the top of the Explorer sidebar and your working files underneath it.
 
-## 6. Add your working files
+## 7. Run Claude Code inside VS Code
 
-Put **copies** of the files you want to use into `Documents/claude-demo`. Remove confidential, private, or sensitive information first.
+From this point forward, work inside VS Code:
 
-To reveal the folder in Finder from Terminal:
-
-```bash
-open "$HOME/Documents/claude-demo"
-```
-
-## 7. Sign in to Claude Code
-
-Return to Terminal and make sure you are in the demo repository:
+1. Bring VS Code to the front.
+2. Press **Control + backtick** to open VS Code’s integrated terminal.
+3. Confirm that the terminal is at the workspace root:
 
 ```bash
-cd "$HOME/Documents/claude-demo"
+pwd
 ```
 
-Start Claude Code:
+The path should end with `/Documents/claude-demo`.
+
+Confirm that the terminal can see your files:
+
+```bash
+find . -type f -not -path './.git/*' | head -20
+```
+
+Start Claude Code inside the VS Code terminal:
 
 ```bash
 claude
 ```
 
-Claude opens a browser for a one-time sign-in. Use the Claude account connected to your subscription. If the browser does not open, press `c` in Terminal to copy the login URL, then open that URL in your browser.
+Claude opens a browser for a one-time sign-in. Use the Claude account connected to your subscription. If the browser does not open, press `c` in the terminal to copy the login URL, then open that URL in your browser.
 
-When Claude Code opens successfully, enter:
+When Claude Code starts, enter:
 
 ```text
 /status
@@ -184,38 +215,48 @@ When Claude Code opens successfully, enter:
 
 Confirm that it shows the expected subscription login.
 
-## 8. Run Claude inside VS Code
+## Final check
 
-1. Bring VS Code to the front.
-2. Press **Control + backtick** to open VS Code’s integrated terminal.
-3. Run:
+You are ready only when all of these are true:
 
-```bash
-claude
-```
+- [ ] VS Code is open with `claude-demo` as the top-level workspace folder.
+- [ ] All intended working files appear in the VS Code Explorer.
+- [ ] VS Code’s integrated terminal is open.
+- [ ] The terminal path ends with `/Documents/claude-demo`.
+- [ ] Git is initialized in that folder.
+- [ ] Claude Code is running in that integrated terminal.
 
-You are ready when VS Code is open at the `claude-demo` repository root and Claude Code is running in the integrated terminal.
-
-## Quick verification
-
-From the demo folder, each of these should succeed:
+If Claude is not currently running, open a new VS Code terminal with **Control + backtick** and run:
 
 ```bash
 cd "$HOME/Documents/claude-demo"
+claude
+```
+
+## Quick diagnostic
+
+Run this from VS Code’s integrated terminal:
+
+```bash
+pwd
+git rev-parse --show-toplevel
 git --version
 code --version
 claude --version
+find . -type f -not -path './.git/*' | head -20
 ```
+
+The first two paths should both end with `/Documents/claude-demo`, every version command should succeed, and the final lines should list your working files.
 
 ## If a command is not found
 
-Reload the Terminal environment:
+Reload the shell environment:
 
 ```bash
 exec zsh -l
 ```
 
-Then retry the failed verification command. If it still fails, save a screenshot of the complete Terminal error for the meeting.
+Then retry the failed verification command. If it still fails, save a screenshot of the complete terminal error for the meeting.
 
 ## Official references
 
